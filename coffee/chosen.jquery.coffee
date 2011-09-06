@@ -6,16 +6,16 @@ root = this
 $ = jQuery
 
 $.fn.extend({
-  chosen: (data, options) ->
+  chosen: (options) ->
     $(this).each((input_field) ->
-      new Chosen(this, data, options) unless ($ this).hasClass "chzn-done"
+      new Chosen(this, options) unless ($ this).hasClass "chzn-done"
     )
 }) 
 
 class Chosen
 
-  constructor: (elmn, data, options) ->
-    @options = $.extend({}, options)
+  constructor: (elmn, options) ->
+    @options = $.extend({addOption: true}, options)
     this.set_default_values()
     
     @form_field = elmn
@@ -472,19 +472,16 @@ class Chosen
     no_results_html = $('<li class="no-results">No results match "<span></span>".</li>')
     no_results_html.find("span").first().html(terms)
 
-    if not selected
+    if not selected and @options.addOption
       no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
       no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
 
     @search_results.append no_results_html
 
   select_add_option: (terms) ->
-    if $.isFunction(@options.addOption)
-      @options.addOption(terms)
-    else
-      new_option_html = $('<option />', {value: terms}).text(terms)
-      @form_field_jq.append new_option_html
-      @form_field_jq.trigger "liszt:updated"
+    new_option_html = $('<option />', {value: terms}).text(terms)
+    @form_field_jq.append new_option_html
+    @form_field_jq.trigger "liszt:updated"
 
     @search_field.val terms
     @search_field.trigger "keyup"

@@ -11,22 +11,25 @@
   /*
   Chosen source: generate output using 'cake build'
   Copyright (c) 2011 by Harvest
-  */  var $, Chosen, get_side_border_padding, root;
+  */
+  var $, Chosen, get_side_border_padding, root;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   root = this;
   $ = jQuery;
   $.fn.extend({
-    chosen: function(data, options) {
+    chosen: function(options) {
       return $(this).each(function(input_field) {
         if (!($(this)).hasClass("chzn-done")) {
-          return new Chosen(this, data, options);
+          return new Chosen(this, options);
         }
       });
     }
   });
   Chosen = (function() {
-    function Chosen(elmn, data, options) {
-      this.options = $.extend({}, options);
+    function Chosen(elmn, options) {
+      this.options = $.extend({
+        addOption: true
+      }, options);
       this.set_default_values();
       this.form_field = elmn;
       this.form_field_jq = $(this.form_field);
@@ -550,7 +553,7 @@
       var no_results_html;
       no_results_html = $('<li class="no-results">No results match "<span></span>".</li>');
       no_results_html.find("span").first().html(terms);
-      if (!selected) {
+      if (!selected && this.options.addOption) {
         no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>');
         no_results_html.find("a.option-add").bind("click", __bind(function(evt) {
           return this.select_add_option(terms);
@@ -560,15 +563,11 @@
     };
     Chosen.prototype.select_add_option = function(terms) {
       var new_option_html;
-      if ($.isFunction(this.options.addOption)) {
-        this.options.addOption(terms);
-      } else {
-        new_option_html = $('<option />', {
-          value: terms
-        }).text(terms);
-        this.form_field_jq.append(new_option_html);
-        this.form_field_jq.trigger("liszt:updated");
-      }
+      new_option_html = $('<option />', {
+        value: terms
+      }).text(terms);
+      this.form_field_jq.append(new_option_html);
+      this.form_field_jq.trigger("liszt:updated");
       this.search_field.val(terms);
       this.search_field.trigger("keyup");
       return this.result_select();

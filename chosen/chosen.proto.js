@@ -11,11 +11,15 @@
   /*
   Chosen source: generate output using 'cake build'
   Copyright (c) 2011 by Harvest
-  */  var Chosen, get_side_border_padding, root;
+  */
+  var Chosen, get_side_border_padding, root;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   root = this;
   Chosen = (function() {
-    function Chosen(elmn) {
+    function Chosen(elmn, options) {
+      this.options = $.extend({
+        addOption: true
+      }, options);
       this.set_default_values();
       this.form_field = elmn;
       this.is_multiple = this.form_field.multiple;
@@ -547,7 +551,7 @@
     };
     Chosen.prototype.no_results = function(terms, selected) {
       var add_item_link;
-      add_item_link = selected ? '' : ' <a href="javascript:void(0);" class="option-add">Add this item</a>';
+      add_item_link = selected || this.options.addOption === false ? '' : ' <a href="javascript:void(0);" class="option-add">Add this item</a>';
       this.search_results.insert(this.no_results_temp.evaluate({
         terms: terms,
         add_item_link: add_item_link

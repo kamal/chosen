@@ -6,7 +6,8 @@ root = this
 
 class Chosen
 
-  constructor: (elmn) ->
+  constructor: (elmn, options) ->
+    @options = $.extend({addOption: true}, options)
     this.set_default_values()
     
     @form_field = elmn
@@ -466,7 +467,7 @@ class Chosen
       this.result_do_highlight do_high if do_high?
 
   no_results: (terms, selected) ->
-    add_item_link = if selected then '' else ' <a href="javascript:void(0);" class="option-add">Add this item</a>'
+    add_item_link = if selected || @options.addOption == false then '' else ' <a href="javascript:void(0);" class="option-add">Add this item</a>'
     @search_results.insert @no_results_temp.evaluate( terms: terms, add_item_link: add_item_link )
     @search_results.down("a.option-add").observe "click", (evt) => this.select_add_option(terms) unless selected
 
